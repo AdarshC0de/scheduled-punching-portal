@@ -21,8 +21,36 @@
 - npm uninstall prisma @prisma/client
 - npm install prisma@6.16.2 @prisma/client@6.16.2
 
+- npm install bcryptjs
+- npm install -D ts-node
+- npm i --save-dev @types/node
+
 # Client
 
 - npm create vite@latest client
 - npm install
 - npm install react-router-dom axios @tanstack/react-query zustand react-hook-form zod
+
+# DataBase
+
+- npx prisma generate
+- npx prisma migrate dev --name create_user_and_role
+- npx prisma studio
+
+# Module 1 - Auth
+
+- server/src/repositories/auth.repository.ts
+- server/src/types/auth.types.ts
+- server/src/validators/auth.validator.ts
+- server/src/middlewares/validate.middleware.ts
+
+- server/src/services/auth.service.
+- server/src/controllers/auth.controller.ts
+- server/src/routes/auth.routes.ts
+
+- server/src/routes/index.ts
+
+- server/prisma/seed.ts
+
+- server/src/middlewares/auth.middleware.ts
+- server/src/types/express.d.ts
