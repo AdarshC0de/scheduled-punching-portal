@@ -33,8 +33,8 @@
 
 # DataBase
 
-- npx prisma generate
 - npx prisma migrate dev --name create_user_and_role
+- npx prisma generate
 - npx prisma studio
 
 # Module 1 - Auth
@@ -54,3 +54,12 @@
 
 - server/src/middlewares/auth.middleware.ts
 - server/src/types/express.d.ts
+
+# Module 2 - Company
+
+- server/src/repositories/company.repository.ts (createCompany, findAllCompanies, findCompanyById, findCompanyByCode)
+- server/src/services/company.service.ts (createCompanyService, getAllCompaniesService, getAllCompaniesService)
+- server/src/validators/company.validator.ts (createCompanySchema)
+- server/src/controllers/company.controller.ts (createCompany, getAllCompanies, getCompanyById)
+- server/src/routes/company.routes.ts
+- server/src/routes/index.ts
