@@ -11,9 +11,9 @@ const router = Router();
 
 router.post("/", validate(createCompanySchema), createCompany);
 
-router.post("/", getAllCompanies);
+router.get("/", getAllCompanies);
 
-router.post("/:companyId", getCompanyById);
+router.get("/:companyId", getCompanyById);
 
 export default router;
 

@@ -7,7 +7,7 @@ import companyRoutes from "./company.routes"
 const router = Router();
 
 router.use("/health", healthRoutes);
-router.use("/auth", authenticate, authRoutes);
-router.use("/companies", companyRoutes)
+router.use("/auth", authRoutes);
+router.use("/companies", authenticate, companyRoutes)
 
 export default router;
