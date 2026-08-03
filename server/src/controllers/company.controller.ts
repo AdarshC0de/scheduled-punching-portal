@@ -5,6 +5,7 @@ import {
     getCompanyByIdService,
 } from "../services/company.service";
 import { ApiResponse } from "../utils/ApiResponse";
+import { ApiError } from "../utils/ApiError";
 
 export const createCompany = async (req: Request, res: Response) => {
     const { name, code } = req.body;
@@ -22,6 +23,10 @@ export const getAllCompanies = async (_req: Request, res: Response) => {
 
 export const getCompanyById = async (req: Request, res: Response) => {
     const { companyId } = req.params;
+
+    if (typeof companyId !== "string") {
+            throw new ApiError(400, "Invalid Plant ID!")
+        }
 
     const company = await getCompanyByIdService(companyId);
 
