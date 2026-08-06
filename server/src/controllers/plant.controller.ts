@@ -3,6 +3,8 @@ import {
     createPlantService,
     getPlantByIdService,
     getPlantsByCompanyService,
+    updatePlantService,
+    deletePlantService,
 } from "../services/plant.service";
 import { ApiError } from "../utils/ApiError";
 
@@ -72,4 +74,43 @@ export const getPlantById = async (
   } catch (error) {
     next(error);
   }
+};
+
+export const updatePlant = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { plantId } = req.params;
+
+        if (typeof plantId !== "string") {
+        throw new ApiError(400, "Invalid Plant ID");
+        }
+
+        const Plant = await updatePlantService(plantId, req.body);
+
+        return res.status(200).json({
+        success: true,
+        message: "Plant updated successfully",
+        data: Plant,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deletePlant = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { plantId } = req.params;
+
+        if (typeof plantId !== "string") {
+            throw new ApiError(400, "Invalid Plant ID!")
+        }
+
+        await deletePlantService(plantId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Plant deleted successfully!",
+        });
+    } catch (error) {
+        next(error);
+    }
 };

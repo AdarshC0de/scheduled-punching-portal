@@ -21,6 +21,7 @@ export const findCompanyById = async (companyId: string) => {
     return prisma.company.findUnique({
         where: {
             id: companyId,
+            isActive: true,
         },
     });
 };
@@ -32,4 +33,22 @@ export const findCompanyByCode = async (code: string) => {
         },
     });
 };
+
+export const updateCompany = async (
+    companyId: string,
+    data: { name?: string; code?: string }
+) => {
+    return prisma.company.update({
+        where: {id: companyId},
+        data,
+    });
+};
+
+export const deactivateCompany = async (companyId: string) => { 
+    return prisma.company.update ({
+    where: { id: companyId },
+    data: { isActive: false },
+    });
+};
+
 

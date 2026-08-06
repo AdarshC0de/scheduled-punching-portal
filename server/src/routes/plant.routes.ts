@@ -1,12 +1,14 @@
 import { Router } from "express";
 import {
     createPlant,
+    deletePlant,
     getPlantById,
-    getPlantsByCompany,    
+    getPlantsByCompany,  
+    updatePlant  
 } from "../controllers/plant.controller"
 import { authenticate } from "../middlewares/auth.middleware";
 import { validate } from "../middlewares/validate.middleware";
-import { createPlantSchema } from "../validators/plant.validator";
+import { createPlantSchema, updatePlantSchema } from "../validators/plant.validator";
 
 const router = Router();
 
@@ -28,5 +30,18 @@ router.get(
     authenticate,
     getPlantById
 );
+
+router.patch(
+    ":/plantId",
+    authenticate,
+    validate(updatePlantSchema),
+    updatePlant,
+)
+
+router.delete(
+    "/:plantId",
+    authenticate,
+    deletePlant
+)
 
 export default router;

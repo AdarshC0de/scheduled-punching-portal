@@ -1,11 +1,15 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import {
     createCompanyService,
+    deleteCompanyService,
     getAllCompaniesService,
     getCompanyByIdService,
+    updateCompanyService,
 } from "../services/company.service";
 import { ApiResponse } from "../utils/ApiResponse";
 import { ApiError } from "../utils/ApiError";
+import { success } from "zod";
+
 
 export const createCompany = async (req: Request, res: Response) => {
     const { name, code } = req.body;
@@ -31,4 +35,43 @@ export const getCompanyById = async (req: Request, res: Response) => {
     const company = await getCompanyByIdService(companyId);
 
     return res.status(200).json(new ApiResponse (true, "Company fetched succefully!", company));
+};
+
+export const updateCompany = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { companyId } = req.params;
+
+        if (typeof companyId !== "string") {
+        throw new ApiError(400, "Invalid company ID");
+        }
+
+        const company = await updateCompanyService(companyId, req.body);
+
+        return res.status(200).json({
+        success: true,
+        message: "Company updated successfully",
+        data: company,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteCompany = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { companyId } = req.params;
+
+        if (typeof companyId !== "string") {
+            throw new ApiError(400, "Invalid company ID!")
+        }
+
+        await deleteCompanyService(companyId);
+
+        return res.status(200).json({
+            success: true,
+            message: "Company deleted successfully!",
+        });
+    } catch (error) {
+        next(error);
+    }
 };

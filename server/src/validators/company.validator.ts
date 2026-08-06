@@ -18,3 +18,19 @@ export const createCompanySchema = z.object({
       "Company code can contain only letters, numbers, underscores, and hyphens"
     ),
 });
+
+export const updateCompanySchema = z
+  .object({
+    name: z.string().trim().min(2).max(100).optional(),
+    code: z
+      .string()
+      .trim()
+      .min(2)
+      .max(20)
+      .toUpperCase()
+      .regex(/^[A-Z0-9_-]+$/)
+      .optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required",
+  });

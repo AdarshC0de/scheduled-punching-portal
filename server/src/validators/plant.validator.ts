@@ -22,3 +22,19 @@ export const createPlantSchema = z.object({
     error: "Invalid company ID",
   }),
 });
+
+export const updatePlantSchema = z
+  .object({
+    name: z.string().trim().min(2).max(100).optional(),
+    code: z
+      .string()
+      .trim()
+      .min(2)
+      .max(20)
+      .toUpperCase()
+      .regex(/^[A-Z0-9_-]+$/)
+      .optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field is required",
+  });
