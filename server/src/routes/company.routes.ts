@@ -9,6 +9,7 @@ import {
 import { validate } from "../middlewares/validate.middleware";
 import { createCompanySchema, updateCompanySchema } from "../validators/company.validator";
 import { authenticate } from "../middlewares/auth.middleware";
+import { restoreCompany } from "../repositories/company.repository";
 
 const router = Router();
 
@@ -32,5 +33,11 @@ router.delete(
     authenticate,
     deleteCompany,
 )
+
+router.patch(
+    ":/companyId/restore",
+    authenticate,
+    restoreCompany
+);
 
 export default router;

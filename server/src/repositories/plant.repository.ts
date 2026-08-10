@@ -18,7 +18,6 @@ export const findPlantById = async (plantId: string) => {
     return prisma.plant.findUnique({
         where: {
             id: plantId,
-            isActive: true,
         },
         include: {
             company: true,
@@ -38,10 +37,11 @@ export const findPlantByCompany = async (companyId: string) => {
      });
 };
 
-export const findPlantByCode = async (code: string) => {
+export const findPlantByCode = async (companyId: string, code: string) => {
   return prisma.plant.findFirst({
     where: {
       code,
+      companyId,
     },
   });
 };
@@ -60,5 +60,25 @@ export const deactivatePlant = async (plantId: string) => {
     return prisma.plant.update({
         where: { id: plantId },
         data: { isActive: false },
+    });
+};
+
+export const restorePlant = async (plantId: string) => {
+    return prisma.plant.update({
+        where: {
+            id: plantId,
+        },
+        data: {
+            isActive: true,
+        },
+    });
+};
+
+export const hasActivePlantsByCompany = async (companyId: string) => {
+    return prisma.plant.findFirst({
+        where: {
+            companyId,
+            isActive: true,
+        },
     });
 };

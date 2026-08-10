@@ -36,7 +36,9 @@ export const findCompanyByCode = async (code: string) => {
 
 export const updateCompany = async (
     companyId: string,
-    data: { name?: string; code?: string }
+    data: { name?: string; 
+            code?: string; 
+            isActive?: boolean; }
 ) => {
     return prisma.company.update({
         where: {id: companyId},
@@ -51,4 +53,13 @@ export const deactivateCompany = async (companyId: string) => {
     });
 };
 
-
+export const restoreCompany = async (companyId: string ) => {
+    return prisma.company.update({
+        where: {
+            id: companyId,
+        },
+        data: {
+            isActive: true,
+        },
+    });
+};

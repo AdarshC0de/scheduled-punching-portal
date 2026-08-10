@@ -5,6 +5,7 @@ import {
     findPlantByCompany,
     findPlantById,
     updatePlant,
+    restorePlant,
 } from "../repositories/plant.repository"
 import { findCompanyById } from "../repositories/company.repository"
 import { ApiError } from "../utils/ApiError"
@@ -23,7 +24,7 @@ export const createPlantService = async (
 
     const normalizedCode = code.trim().toUpperCase();
 
-    const existingPlant = await findPlantByCode(normalizedCode);
+    const existingPlant = await findPlantByCode(normalizedCode, companyId);
 
     if (existingPlant) {
         throw new ApiError (409, "A plant with this code already exists!");
@@ -58,14 +59,18 @@ export const updatePlantService = async (
 ) => {
     const plant = await findPlantById(plantId);
 
-    if (!plant || !plant.isActive) {
+    if (!plant) {
         throw new ApiError(404,"Plant not found!");
+    }
+
+    if (!plant.isActive) {
+        throw new ApiError(409, "Plant is not active")
     }
 
     const code = data.code?.trim().toUpperCase();
 
     if (code) {
-        const plantWithCode = await findPlantByCode(code);
+        const plantWithCode = await findPlantByCode(code, plant.companyId);
 
         if (plantWithCode && plantWithCode.id !== plantId) {
             throw new ApiError(409, "A plant with this code already exists!")
@@ -81,9 +86,27 @@ export const updatePlantService = async (
 export const deletePlantService = async (plantId: string) => {
     const plant = await findPlantById(plantId);
 
-    if (!plant || !plant.isActive) {
+    if (!plant) {
         throw new ApiError(404, "Plant not found!")
     }
 
+    if (!plant.isActive) {
+        throw new ApiError(409, "Plant is inactive!")
+    }
+
     return deactivatePlant(plantId);
+};
+
+export const restorePlantService = async (plantId: string) => {
+    const plant = await findPlantById(plantId);
+
+    if (!plant) {
+        throw new ApiError(404, "Plant not found!");
+    }
+
+    if (plant.isActive) {
+        throw new ApiError(409, "Plant is already active!");
+    }
+
+    return restorePlant(plantId);
 };

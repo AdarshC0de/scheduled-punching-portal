@@ -4,6 +4,7 @@ import {
     deleteCompanyService,
     getAllCompaniesService,
     getCompanyByIdService,
+    restoreCompanyService,
     updateCompanyService,
 } from "../services/company.service";
 import { ApiResponse } from "../utils/ApiResponse";
@@ -71,6 +72,32 @@ export const deleteCompany = async (req: Request, res: Response, next: NextFunct
             success: true,
             message: "Company deleted successfully!",
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const restoreCompany = async (
+    req: Request<{ companyId: string }>,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { companyId } = req.params;
+
+        if(!companyId) {
+            throw new ApiError(400, "Company is requried!");
+        }
+
+        const company = await restoreCompanyService(companyId);
+
+        return res.status(200).json(
+            new ApiResponse(
+                true,
+                "Company restored succesfully!",
+                company
+            )
+        );
     } catch (error) {
         next(error);
     }

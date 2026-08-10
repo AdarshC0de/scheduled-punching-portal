@@ -4,6 +4,7 @@ import {
     deletePlant,
     getPlantById,
     getPlantsByCompany,  
+    restorePlant,  
     updatePlant  
 } from "../controllers/plant.controller"
 import { authenticate } from "../middlewares/auth.middleware";
@@ -13,7 +14,7 @@ import { createPlantSchema, updatePlantSchema } from "../validators/plant.valida
 const router = Router();
 
 router.post(
-    "/",
+    "/company/:companyId",
     authenticate, 
     validate(createPlantSchema),
     createPlant
@@ -42,6 +43,19 @@ router.delete(
     "/:plantId",
     authenticate,
     deletePlant
+)
+
+router.patch(
+    "/:plantId",
+    authenticate,
+    validate(updatePlantSchema),
+    updatePlant
+)
+
+router.patch(
+    "/:plantId/restore",
+    authenticate,
+    restorePlant
 )
 
 export default router;

@@ -4,8 +4,10 @@ import {
     findAllCompanies, 
     findCompanyByCode,
     findCompanyById,
+    restoreCompany,
     updateCompany,
 } from "../repositories/company.repository";
+import { hasActivePlantsByCompany } from "../repositories/plant.repository";
 import { ApiError } from "../utils/ApiError";
 
 export const createCompanyService = async (name: string, code: string) => {
@@ -48,8 +50,12 @@ export const updateCompanyService = async (
 ) => {
     const company = await findCompanyById(companyId);
 
-    if (!company || !company.isActive) {
+    if (!company) {
         throw new ApiError(404, "Company not found");
+    }
+
+    if (!company.isActive) {
+        throw new ApiError(40, "Company is inactive!")
     }
 
     const code = data.code?.trim().toUpperCase();
@@ -71,9 +77,35 @@ export const updateCompanyService = async (
 export const deleteCompanyService = async (companyId: string) => {
     const company = await findCompanyById(companyId);
 
-    if (!company || !company.isActive) {
+    if (!company) {
         throw new ApiError(404, "Company not found!")
+    }
+
+    if (!company.isActive) {
+        throw new ApiError(409, "Company is inactive!")
+    }
+
+    const activePlant = await hasActivePlantsByCompany(companyId);
+
+    if (activePlant) {
+        throw new ApiError(
+            409, "Company cannot be deleted while it has active plants!"
+        );
     }
 
     return deactivateCompany(companyId);
 };
+
+export const restoreCompanyService = async (companyId: string ) => {
+    const company = await findCompanyById(companyId);
+
+    if (!company) {
+        throw new ApiError(404, "Company not found!");
+    }
+
+    if (company.isActive) {
+        throw new ApiError(400, "Company is already active!");
+    }
+
+    return restoreCompany(companyId);
+}
