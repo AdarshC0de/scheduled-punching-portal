@@ -33,7 +33,7 @@ router.get(
 );
 
 router.patch(
-    ":/plantId",
+    "/:plantId",
     authenticate,
     validate(updatePlantSchema),
     updatePlant,
@@ -43,13 +43,6 @@ router.delete(
     "/:plantId",
     authenticate,
     deletePlant
-)
-
-router.patch(
-    "/:plantId",
-    authenticate,
-    validate(updatePlantSchema),
-    updatePlant
 )
 
 router.patch(

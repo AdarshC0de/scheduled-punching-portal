@@ -1,0 +1,55 @@
+PLANT
+| # | Method | Endpoint | Purpose |
+| 1 | `POST` | `/plants/company/:companyId` | Create plant |
+| 2 | `GET` | `/plants/company/:companyId` | Get all plants for a company |
+| 3 | `GET` | `/plants/:plantId` | Get a plant |
+| 4 | `PATCH` | `/plants/:plantId` | Update plant |
+| 5 | `DELETE` | `/plants/:plantId` | Soft-delete plant |
+| 6 | `PATCH` | `/plants/:plantId/restore` | Restore plant |
+
+
+COMPANY
+| # | Method | Endpoint | Purpose |
+| 7 | `POST` | `/companies` | Create company |
+| 8 | `GET` | `/companies/:companyId` | Get company |
+| 9 | `PATCH` | `/companies/:companyId` | Update company |
+| 10 | `DELETE` | `/companies/:companyId` | Soft-delete company |
+| 11 | `PATCH` | `/companies/:companyId/restore` | Restore company |
+
+CURRENT ACTIVE CHECKLIST
+COMPANY
+☐ Create company
+☐ Get company
+☐ Update company name
+☐ Update company code
+☐ Update isActive
+☐ Delete active company
+☐ Delete already inactive company
+☐ Delete company with active plant → MUST FAIL
+☐ Delete company with only inactive plants → MUST WORK
+☐ Restore company
+☐ Restore already active company → MUST FAIL
+
+PLANT
+☐ Create plant
+☐ Create plant with nonexistent company
+☐ Create duplicate plant code in same company → MUST FAIL
+☐ Create same plant code in different company → MUST WORK
+☐ Get plants by company
+☐ Get active plant
+☐ Get inactive plant
+☐ Update plant name
+☐ Update plant code
+☐ Update duplicate code → MUST FAIL
+☐ Delete plant
+☐ Delete already inactive plant → MUST FAIL
+☐ Restore plant
+☐ Restore already active plant → MUST FAIL
+
+GENERAL
+☐ Authentication missing
+☐ Invalid companyId
+☐ Invalid plantId
+☐ Validation errors
+☐ Correct HTTP status codes
+☐ Correct ApiResponse format
