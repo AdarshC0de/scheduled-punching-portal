@@ -29,13 +29,13 @@ router.patch(
 );
 
 router.delete(
-    ":/companyId",
+    "/:companyId",
     authenticate,
     deleteCompany,
 )
 
 router.patch(
-    ":/companyId/restore",
+    "/:companyId/restore",
     authenticate,
     restoreCompany
 );

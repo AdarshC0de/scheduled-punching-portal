@@ -3,6 +3,8 @@ import healthRoutes from "./health.routes";
 import authRoutes from "./auth.routes";
 import companyRoutes from "./company.routes"
 import plantRoutes from "./plant.routes"
+import configurationRoutes from "./configuration.routes";
+import uploadRoutes from "./upload.routes";
 
 const router = Router();
 
@@ -10,5 +12,7 @@ router.use("/health", healthRoutes);
 router.use("/auth", authRoutes);
 router.use("/companies", companyRoutes);
 router.use("/plants", plantRoutes);
+router.use("/configuration", configurationRoutes);
+router.use("/uploads", uploadRoutes);
 
 export default router;

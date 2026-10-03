@@ -7,8 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model Role {
   id          String   @id @default(cuid())
   name        String   @unique
@@ -19,37 +17,263 @@ model Role {
 }
 
 model User {
-  id          String   @id @default(cuid())
-  firstName   String
-  lastName    String?
-  email       String   @unique
-  password    String
-  roleId      String
-  isActive    Boolean  @default(true)
-  lastLogin   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  role        Role     @relation(fields:[roleId],references:[id])
+  id        String    @id @default(cuid())
+  firstName String
+  lastName  String?
+  email     String    @unique
+  password  String
+  roleId    String
+  isActive  Boolean   @default(true)
+  lastLogin DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  role      Role      @relation(fields: [roleId], references: [id])
+  uploads   Upload[]
 }
 
 model Company {
-    id        String   @id @default(cuid())
-    name      String
-    code      String   @unique
-    isActive  Boolean  @default(true)
-    plants    Plant[]
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  isActive  Boolean  @default(true)
+  plants    Plant[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Plant {
-    id        String   @id @default(cuid())
-    name      String
-    code      String
-    companyId String
-    isActive  Boolean  @default(true)
-    company   Company @relation( fields: [companyId], references: [id] )
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-    @@unique([companyId, code])
+  id            String         @id @default(cuid())
+  name          String
+  code          String
+  companyId     String
+  isActive      Boolean        @default(true)
+  company       Company        @relation(fields: [companyId], references: [id])
+  configuration Configuration?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  UploadRecord  UploadRecord[]
+  uploads       Upload[]
+
+  @@unique([companyId, code])
+}
+
+model Configuration {
+  id      String @id @default(cuid())
+  plantId String @unique
+
+  plant Plant @relation(fields: [plantId], references: [id], onDelete: Cascade)
+
+  general  GeneralConfiguration?
+  email    EmailConfiguration?
+  sftp     SftpConfiguration?
+  filename FilenameConfiguration?
+  excel    ExcelConfiguration?
+  revision RevisionConfiguration?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GeneralConfiguration {
+  id              String @id @default(cuid())
+  configurationId String @unique
+
+  timezone String  @default("Asia/Kolkata")
+  isActive Boolean @default(true)
+
+  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailConfiguration {
+  id              String @id @default(cuid())
+  configurationId String @unique
+
+  enabled   Boolean @default(false)
+  smtpHost  String?
+  smtpPort  Int?
+  username  String?
+  password  String?
+  fromEmail String?
+
+  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  recipients EmailRecipient[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailRecipient {
+  id                   String @id @default(cuid())
+  emailConfigurationId String
+
+  email String
+  type  EmailRecipientType
+
+  emailConfiguration EmailConfiguration @relation(fields: [emailConfigurationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([emailConfigurationId])
+}
+
+enum EmailRecipientType {
+  TO
+  CC
+  BCC
+}
+
+model SftpConfiguration {
+  id              String @id @default(cuid())
+  configurationId String @unique
+
+  enabled            Boolean                @default(false)
+  host               String?
+  port               Int?
+  username           String?
+  authenticationType SFTPAuthenticationType @default(PASSWORD)
+  password           String?
+  privateKey         String?
+  remotePath         String?
+
+  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum SFTPAuthenticationType {
+  PASSWORD
+  PRIVATE_KEY
+}
+
+model FilenameConfiguration {
+  id              String @id @default(cuid())
+  configurationId String @unique
+
+  template String
+
+  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExcelConfiguration {
+  id              String @id @default(cuid())
+  configurationId String @unique
+
+  templateFile String?
+
+  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  mappings ExcelColumnMapping[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExcelColumnMapping {
+  id                   String @id @default(cuid())
+  excelConfigurationId String
+
+  sourceColumn   String
+  targetColumn   String
+  transformation String?
+
+  excelConfiguration ExcelConfiguration @relation(fields: [excelConfigurationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([excelConfigurationId])
+}
+
+model RevisionConfiguration {
+  id              String @id @default(cuid())
+  configurationId String @unique
+
+  enabled          Boolean @default(false)
+  format           String  @default("rev{revision}")
+  startingRevision Int     @default(1)
+
+  configuration Configuration @relation(fields: [configurationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UploadSource {
+  FILE
+  MANUAL
+}
+
+enum UploadFileType {
+  CSV
+  XLS
+  XLSX
+  MANUAL
+}
+
+enum UploadStatus {
+  PREVIEW
+  COMPLETED
+  FAILED
+}
+
+model Upload {
+  id           String @id @default(cuid())
+  plantId      String
+  uploadedById String
+
+  originalFilename String?
+  filePath         String?
+
+  source   UploadSource
+  fileType UploadFileType
+  status   UploadStatus   @default(PREVIEW)
+
+  totalRows     Int @default(0)
+  validRows     Int @default(0)
+  invalidRows   Int @default(0)
+  duplicateRows Int @default(0)
+
+  plant      Plant @relation(fields: [plantId], references: [id])
+  uploadedBy User  @relation(fields: [uploadedById], references: [id])
+
+  records UploadRecord[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([plantId])
+  @@index([uploadedById])
+}
+
+model UploadRecord {
+  id       String @id @default(cuid())
+  uploadId String
+  plantId  String
+
+  rowNumber Int
+  data      Json
+
+  rowHash     String
+  isValid     Boolean @default(true)
+  isDuplicate Boolean @default(false)
+
+  validationErrors Json?
+
+  upload Upload @relation(fields: [uploadId], references: [id], onDelete: Cascade)
+  plant  Plant  @relation(fields: [plantId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([plantId, rowHash])
+  @@index([uploadId])
+  @@index([plantId])
+  @@index([rowHash])
 }
